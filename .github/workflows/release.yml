@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  pull_request_target:
+    branches:
+      - main
+    types:
+      - closed
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build and publish distribution
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Calculate release version
+        id: release-version
+        env:
+          BUMP_MAJOR: ${{ contains(github.event.pull_request.labels.*.name, 'release:major') }}
+          BUMP_MINOR: ${{ contains(github.event.pull_request.labels.*.name, 'release:minor') }}
+        run: python3 .github/scripts/calculate_release_version.py
+
+      - name: Test and build plugin distribution
+        env:
+          PLUGIN_VERSION: ${{ steps.release-version.outputs.version }}
+        run: ./gradlew test buildPlugin "-PpluginVersion=$PLUGIN_VERSION" --no-daemon
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_COMMIT: ${{ github.sha }}
+          PLUGIN_VERSION: ${{ steps.release-version.outputs.version }}
+        run: >-
+          gh release create "v$PLUGIN_VERSION"
+          build/distributions/*.zip
+          --target "$RELEASE_COMMIT"
+          --generate-notes
+          --title "v$PLUGIN_VERSION"

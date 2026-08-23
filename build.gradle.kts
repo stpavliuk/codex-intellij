@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "io.github.stpavliuk"
-version = "0.1.0"
+version = providers.gradleProperty("pluginVersion").getOrElse("0.1.0")
 
 kotlin {
     jvmToolchain(21)

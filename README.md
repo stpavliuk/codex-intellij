@@ -10,15 +10,19 @@ tabs over Codex's local IDE-context IPC protocol. It works with:
 - Codex CLI running in IntelliJ's terminal or another local terminal.
 - The local Codex desktop app.
 
+## Installation
+
+1. Download `codex-intellij-<version>.zip` from the latest GitHub Release.
+2. In your JetBrains IDE, open **Settings | Plugins**, select the gear menu,
+   and choose **Install Plugin from Disk**.
+3. Select the downloaded ZIP file and restart the IDE when prompted.
+
 ## Usage
 
-1. Build with `./gradlew buildPlugin`, then install
-   `build/distributions/codex-intellij-0.1.0.zip` using **Settings | Plugins |
-   Install Plugin from Disk**.
-2. Open a project in IntelliJ IDEA.
-3. Run `codex` from that project directory.
-4. In Codex CLI, enter `/ide on`. In the Codex app, enable **IDE context**.
-5. Select code in IntelliJ and submit a prompt normally.
+1. Open a project in IntelliJ IDEA.
+2. Run `codex` from that project directory.
+3. In Codex CLI, enter `/ide on`. In the Codex app, enable **IDE context**.
+4. Select code in IntelliJ and submit a prompt normally.
 
 Both processes must run as the same operating-system user and use the same
 `CODEX_HOME`. The bridge defaults to `~/.codex` when `CODEX_HOME` is unset.
