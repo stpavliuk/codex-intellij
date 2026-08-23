@@ -1,7 +1,8 @@
 # Codex IDE Context Plugin
 
 An IntelliJ Codex that provides IDE context to the active Codex CLI/App session.
-**Inspired by Claude Code IDE integration for IntelliJ.**
+
+_Inspired by Claude Code IDE integration for IntelliJ._
 
 The bridge supports the active file, selected text and ranges, and open editor
 tabs over Codex's local IDE-context IPC protocol. It works with:
