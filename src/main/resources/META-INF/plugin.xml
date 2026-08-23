@@ -1,0 +1,17 @@
+<idea-plugin>
+    <id>io.github.stpavliuk.codex.idecontext</id>
+    <name>Codex IDE Context Bridge</name>
+    <vendor email="st.pavliuk@icloud.com">Stanislav Pavliuk</vendor>
+
+    <description><![CDATA[
+        <p>Passes the current IntelliJ editor context to Codex CLI and the Codex desktop app.</p>
+        <p>Keep using Codex in a terminal while automatically including the active file,
+        selected code, selection ranges, and open tabs.</p>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="io.github.stpavliuk.codex.idecontext.CodexBridgeStartupActivity"/>
+    </extensions>
+</idea-plugin>

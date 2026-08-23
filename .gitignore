@@ -1,0 +1,27 @@
+# Gradle and Kotlin
+/.gradle/
+/.kotlin/
+/build/
+/out/
+
+# IntelliJ Platform plugin development
+/.intellijPlatform/
+/sandbox/
+
+# IntelliJ IDEA local project state
+/.idea/
+*.iml
+*.ipr
+*.iws
+
+# Local environment configuration
+.env
+.env.*
+!.env.example
+
+# OS and editor temporary files
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
