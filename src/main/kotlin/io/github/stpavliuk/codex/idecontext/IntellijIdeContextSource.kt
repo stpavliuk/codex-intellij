@@ -20,7 +20,7 @@ import java.util.concurrent.TimeoutException
 internal class IntellijIdeContextSource : IdeContextSource {
     override fun canHandle(workspaceRoot: String): Boolean =
         ProjectManager.getInstance().openProjects.any { project ->
-            !project.isDisposed && WorkspaceMatcher.contains(project.basePath, workspaceRoot)
+            !project.isDisposed && WorkspaceMatcher.contains(project, workspaceRoot)
         }
 
     override fun collect(workspaceRoot: String): JsonObject? {
@@ -48,7 +48,7 @@ internal class IntellijIdeContextSource : IdeContextSource {
 
     private fun matchingProject(workspaceRoot: String): Project? =
         ProjectManager.getInstance().openProjects.firstOrNull { project ->
-            !project.isDisposed && WorkspaceMatcher.contains(project.basePath, workspaceRoot)
+            !project.isDisposed && WorkspaceMatcher.contains(project, workspaceRoot)
         }
 
     private fun contextFor(project: Project): JsonObject = JsonObject().apply {

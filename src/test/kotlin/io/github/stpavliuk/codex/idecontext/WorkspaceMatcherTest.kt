@@ -10,26 +10,23 @@ class WorkspaceMatcherTest {
     fun `matches the project root and its descendants`() {
         val project = Files.createTempDirectory("codex-project").toRealPath()
 
-        assertTrue(WorkspaceMatcher.contains(project.toString(), project.toString()))
-        assertTrue(WorkspaceMatcher.contains(project.toString(), project.resolve("module").toString()))
-        assertFalse(WorkspaceMatcher.contains(project.resolve("module").toString(), project.toString()))
+        assertTrue(WorkspaceMatcher.contains(listOf(project.toString()), project.toString()))
+        assertTrue(WorkspaceMatcher.contains(listOf(project.toString()), project.resolve("module").toString()))
+        assertFalse(WorkspaceMatcher.contains(listOf(project.resolve("module").toString()), project.toString()))
     }
 
     @Test
-    fun `matches workspace parent for IntelliJ metadata roots`() {
+    fun `matches any detected project root`() {
         val workspace = Files.createTempDirectory("codex-workspace").toRealPath()
+        val firstRoot = Files.createDirectory(workspace.resolve("first"))
+        val secondRoot = Files.createDirectory(workspace.resolve("second"))
 
-        listOf(".idea", ".ijwb").forEach { metadataDirectory ->
-            val projectRoot = Files.createDirectory(workspace.resolve(metadataDirectory))
-
-            assertTrue(WorkspaceMatcher.contains(projectRoot.toString(), workspace.toString()))
-            assertTrue(
-                WorkspaceMatcher.contains(
-                    projectRoot.toString(),
-                    workspace.resolve("module").toString(),
-                ),
-            )
-        }
+        assertTrue(
+            WorkspaceMatcher.contains(
+                listOf(firstRoot.toString(), secondRoot.toString()),
+                secondRoot.resolve("module").toString(),
+            ),
+        )
     }
 
     @Test
@@ -37,8 +34,9 @@ class WorkspaceMatcherTest {
         val project = Files.createTempDirectory("codex-project").toRealPath()
         val unrelated = Files.createTempDirectory("other-project").toRealPath()
 
-        assertFalse(WorkspaceMatcher.contains(project.toString(), unrelated.toString()))
-        assertFalse(WorkspaceMatcher.contains(null, project.toString()))
-        assertFalse(WorkspaceMatcher.contains(project.toString(), ""))
+        assertFalse(WorkspaceMatcher.contains(listOf(project.toString()), unrelated.toString()))
+        assertFalse(WorkspaceMatcher.contains(emptyList(), project.toString()))
+        assertFalse(WorkspaceMatcher.contains(listOf(null, ""), project.toString()))
+        assertFalse(WorkspaceMatcher.contains(listOf(project.toString()), ""))
     }
 }
