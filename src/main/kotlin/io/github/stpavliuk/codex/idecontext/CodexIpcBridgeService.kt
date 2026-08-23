@@ -30,8 +30,10 @@ internal class CodexIpcBridgeService : Disposable {
         Thread(runnable, "codex-ide-context-reconnect").apply { isDaemon = true }
     }
     private val contextSource = IntellijIdeContextSource()
-    @Volatile private var router: IpcRouter? = null
-    @Volatile private var provider: IpcProviderClient? = null
+    @Volatile
+    private var router: IpcRouter? = null
+    @Volatile
+    private var provider: IpcProviderClient? = null
 
     fun start() {
         if (!isUnix() || !started.compareAndSet(false, true)) {
