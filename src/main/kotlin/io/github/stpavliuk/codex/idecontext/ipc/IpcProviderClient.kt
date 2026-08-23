@@ -66,8 +66,8 @@ internal class IpcProviderClient(
         val requestId = IpcMessages.string(message, "requestId") ?: return
         val request = message.getAsJsonObject("request")
         val canHandle = request != null && requestVersion(request) == IDE_CONTEXT_VERSION &&
-            IpcMessages.string(request, "method") == IDE_CONTEXT_METHOD &&
-            workspaceRoot(request)?.let(contextSource::canHandle) == true
+                IpcMessages.string(request, "method") == IDE_CONTEXT_METHOD &&
+                workspaceRoot(request)?.let(contextSource::canHandle) == true
         connection.send(JsonObject().apply {
             addProperty("type", "client-discovery-response")
             addProperty("requestId", requestId)

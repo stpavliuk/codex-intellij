@@ -4,7 +4,6 @@ import com.google.gson.JsonObject
 import java.io.Closeable
 import java.net.StandardProtocolFamily
 import java.net.UnixDomainSocketAddress
-import java.nio.channels.Channels
 import java.nio.channels.ServerSocketChannel
 import java.nio.file.Files
 import java.nio.file.Path
@@ -221,6 +220,7 @@ internal class IpcRouter(
         val connection: IpcConnection,
         val future: CompletableFuture<Boolean>,
     )
+
     private data class PendingRoute(val source: IpcConnection, val target: IpcConnection)
     private data class Probe(
         val id: String,
