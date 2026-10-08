@@ -5,6 +5,7 @@ import io.github.stpavliuk.codex.idecontext.IdeContextCollectionTimeoutException
 import io.github.stpavliuk.codex.idecontext.IdeContextSource
 import org.jetbrains.annotations.TestOnly
 import java.io.Closeable
+import java.io.RandomAccessFile
 import java.net.StandardProtocolFamily
 import java.net.UnixDomainSocketAddress
 import java.nio.channels.SocketChannel
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
 internal class IpcProviderClient(
-    private val socketPath: Path,
+    private val socketPath: Path?,
     private val contextSource: IdeContextSource,
 ) : Closeable {
     private val connection = AtomicReference<IpcConnection?>()
@@ -24,9 +25,18 @@ internal class IpcProviderClient(
     private val closed = AtomicBoolean()
 
     fun run() {
-        val channel = SocketChannel.open(StandardProtocolFamily.UNIX)
-        channel.connect(UnixDomainSocketAddress.of(socketPath))
-        val connected = IpcConnection(channel)
+        val connected = if (socketPath == null) {
+            val pipe = RandomAccessFile(WINDOWS_PIPE, "rw")
+            IpcConnection(
+                java.nio.channels.Channels.newInputStream(pipe.channel),
+                java.nio.channels.Channels.newOutputStream(pipe.channel),
+                pipe::close,
+            )
+        } else {
+            val channel = SocketChannel.open(StandardProtocolFamily.UNIX)
+            channel.connect(UnixDomainSocketAddress.of(socketPath))
+            IpcConnection(channel)
+        }
         connection.set(connected)
         try {
             connected.send(initializeRequest())
@@ -135,6 +145,7 @@ internal class IpcProviderClient(
     }
 
     private companion object {
+        const val WINDOWS_PIPE = "\\\\.\\pipe\\codex-ipc"
         const val IDE_CONTEXT_METHOD = "ide-context"
         const val IDE_CONTEXT_VERSION = 0
     }

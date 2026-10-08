@@ -36,7 +36,7 @@ internal class CodexIpcBridgeService : Disposable {
     private var provider: IpcProviderClient? = null
 
     fun start() {
-        if (!isUnix() || !started.compareAndSet(false, true)) {
+        if (!started.compareAndSet(false, true)) {
             return
         }
 
@@ -47,9 +47,9 @@ internal class CodexIpcBridgeService : Disposable {
         if (disposed.get()) {
             return
         }
-        val socketPath = socketPath()
         try {
-            ensureRouter(socketPath)
+            val socketPath = if (isUnix()) socketPath() else null
+            if (socketPath != null) ensureRouter(socketPath)
             val client = IpcProviderClient(socketPath, contextSource)
 
             provider = client

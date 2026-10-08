@@ -2,13 +2,22 @@ package io.github.stpavliuk.codex.idecontext.ipc
 
 import com.google.gson.JsonObject
 import java.io.Closeable
+import java.io.InputStream
+import java.io.OutputStream
 import java.nio.channels.Channels
 import java.nio.channels.SocketChannel
 import java.util.concurrent.atomic.AtomicBoolean
 
-internal class IpcConnection(private val channel: SocketChannel) : Closeable {
-    private val input = Channels.newInputStream(channel)
-    private val output = Channels.newOutputStream(channel)
+internal class IpcConnection(
+    private val input: InputStream,
+    private val output: OutputStream,
+    private val closeTransport: () -> Unit,
+) : Closeable {
+    constructor(channel: SocketChannel) : this(
+        Channels.newInputStream(channel),
+        Channels.newOutputStream(channel),
+        channel::close,
+    )
     private val closed = AtomicBoolean()
 
     fun read(): JsonObject? = IpcFrameCodec.read(input)
@@ -21,7 +30,7 @@ internal class IpcConnection(private val channel: SocketChannel) : Closeable {
 
     override fun close() {
         if (closed.compareAndSet(false, true)) {
-            channel.close()
+            closeTransport()
         }
     }
 }
