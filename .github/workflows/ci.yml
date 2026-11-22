@@ -30,3 +30,23 @@ jobs:
 
       - name: Test and build plugin distribution
         run: ./gradlew test buildPlugin --no-daemon
+
+  windows-build:
+    name: Test Windows named pipe transport
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Test and build plugin distribution
+        run: .\gradlew.bat test buildPlugin --no-daemon

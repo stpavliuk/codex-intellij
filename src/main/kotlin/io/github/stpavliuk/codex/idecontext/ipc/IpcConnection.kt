@@ -4,8 +4,8 @@ import com.google.gson.JsonObject
 import java.io.Closeable
 import java.io.InputStream
 import java.io.OutputStream
+import java.nio.channels.ByteChannel
 import java.nio.channels.Channels
-import java.nio.channels.SocketChannel
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class IpcConnection(
@@ -13,7 +13,7 @@ internal class IpcConnection(
     private val output: OutputStream,
     private val closeTransport: () -> Unit,
 ) : Closeable {
-    constructor(channel: SocketChannel) : this(
+    constructor(channel: ByteChannel) : this(
         Channels.newInputStream(channel),
         Channels.newOutputStream(channel),
         channel::close,
