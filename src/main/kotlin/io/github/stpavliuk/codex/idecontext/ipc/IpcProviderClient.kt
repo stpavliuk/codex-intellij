@@ -5,7 +5,6 @@ import io.github.stpavliuk.codex.idecontext.IdeContextCollectionTimeoutException
 import io.github.stpavliuk.codex.idecontext.IdeContextSource
 import org.jetbrains.annotations.TestOnly
 import java.io.Closeable
-import java.io.RandomAccessFile
 import java.net.StandardProtocolFamily
 import java.net.UnixDomainSocketAddress
 import java.nio.channels.SocketChannel
@@ -26,12 +25,7 @@ internal class IpcProviderClient(
 
     fun run() {
         val connected = if (socketPath == null) {
-            val pipe = RandomAccessFile(WINDOWS_PIPE, "rw")
-            IpcConnection(
-                java.nio.channels.Channels.newInputStream(pipe.channel),
-                java.nio.channels.Channels.newOutputStream(pipe.channel),
-                pipe::close,
-            )
+            IpcConnection(WindowsNamedPipe.open())
         } else {
             val channel = SocketChannel.open(StandardProtocolFamily.UNIX)
             channel.connect(UnixDomainSocketAddress.of(socketPath))
@@ -145,7 +139,6 @@ internal class IpcProviderClient(
     }
 
     private companion object {
-        const val WINDOWS_PIPE = "\\\\.\\pipe\\codex-ipc"
         const val IDE_CONTEXT_METHOD = "ide-context"
         const val IDE_CONTEXT_VERSION = 0
     }
