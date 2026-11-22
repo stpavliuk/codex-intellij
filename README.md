@@ -24,8 +24,9 @@ tabs over Codex's local IDE-context IPC protocol. It works with:
 3. In Codex CLI, enter `/ide on`. In the Codex app, enable **IDE context**.
 4. Select code in IntelliJ and submit a prompt normally.
 
-Both processes must run as the same operating-system user and use the same
-`CODEX_HOME`. The bridge defaults to `~/.codex` when `CODEX_HOME` is unset.
+Both processes must run as the same operating-system user. On macOS and Linux,
+they must also use the same `CODEX_HOME`; the bridge defaults to `~/.codex`
+when it is unset.
 
 ## Development
 
@@ -35,5 +36,12 @@ Both processes must run as the same operating-system user and use the same
 ./gradlew runIde
 ```
 
-The initial implementation uses local Unix-domain sockets on macOS and
-Linux. Windows is not supported.
+On Windows, the plugin connects to Codex's local named pipe at
+`\\.\pipe\codex-ipc`. Keep the Codex desktop app or another Codex IDE
+integration running so the pipe is available. The plugin retries the
+connection once per second.
+
+In the Codex desktop app, enable IDE context with `/ide-context`. Open a
+local task for the same project as your JetBrains IDE, select code, and
+submit a prompt. Codex receives the selection when the prompt is sent;
+it does not appear in the composer beforehand.
